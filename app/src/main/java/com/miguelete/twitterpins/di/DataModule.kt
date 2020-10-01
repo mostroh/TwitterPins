@@ -8,8 +8,6 @@ import com.miguelete.data.source.LocalDataSource
 import com.miguelete.data.source.RemoteDataSource
 import dagger.Module
 import dagger.Provides
-import javax.crypto.SecretKey
-import javax.inject.Named
 
 @Module
 class DataModule {
@@ -25,8 +23,6 @@ class DataModule {
     fun twitterRepositoryProvider(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
-        locationRepository: LocationRepository,
-        @Named("apiKey") apiKey: String,
-        @Named("secretKey") secretKey: String
-    ) = TwitterRepository(localDataSource, remoteDataSource, locationRepository, apiKey, secretKey)
+        locationRepository: LocationRepository
+    ) = TwitterRepository(localDataSource, remoteDataSource, locationRepository)
 }

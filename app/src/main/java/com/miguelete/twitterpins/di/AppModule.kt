@@ -20,7 +20,6 @@ import javax.inject.Singleton
 
 @Module
 class AppModule {
-
     @Provides
     @Singleton
     @Named("apiKey")
@@ -51,7 +50,9 @@ class AppModule {
     fun localDataSourceProvider(db: TweetDatabase): LocalDataSource = RoomDataSource(db)
 
     @Provides
-    fun remoteDataSourceProvider(twitterDB: TwitterDB) : RemoteDataSource = TwitterDbDataSource(twitterDB)
+    fun remoteDataSourceProvider(twitterDB: TwitterDB,
+                                 @Named("apiKey") apiKey: String,
+                                 @Named("secretKey") secretKey: String) : RemoteDataSource = TwitterDbDataSource(twitterDB)
 
 
 }

@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class TwitterRepository(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource,
-    private val locationRepository: LocationRepository,
-    private val apiKey: String,
-    private val secretKey: String
+    private val locationRepository: LocationRepository
 ) {
 
     companion object{
@@ -28,8 +26,6 @@ class TwitterRepository(
 
     suspend fun getRecentTweets(query: String) {
         val remoteTweets = remoteDataSource.getRecentTweets(
-            apiKey,
-            secretKey,
             locationRepository.findLastLocation(),
             query
         )
