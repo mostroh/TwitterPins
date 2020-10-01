@@ -1,14 +1,11 @@
 package com.miguelete.twitterpins.data.server
 
-import androidx.lifecycle.LiveData
-import com.miguelete.twitterpins.data.GenericApiResponse
 import retrofit2.http.Body
-import retrofit2.http.GET
+import retrofit2.http.POST
 
 interface TwitterDBService {
 
-    @GET("statuses/filter.json")
-    fun retrieveFilteredTweets(
-        @Body twitterFilterDto: TwitterFilterDto
-    ): LiveData<GenericApiResponse<List<TweetResult>>>
+    @POST("statuses/filter.json")
+    suspend fun retrieveFilteredTweets(
+        @Body twitterFilterDto: TwitterFilterDto):List<TweetResult>
 }

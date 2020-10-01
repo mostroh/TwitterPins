@@ -2,4 +2,5 @@
     <string name="app_name">TwitterPins</string>
     <string name="api_key" translatable="false">goLW6rf2d4JAcjlXGL6atihRp</string>
     <string name="api_secret" translatable="false">oZ52IVm9gMpQvdQMahLyKGD5XfG9lgj1qqIcsqHr3vFrV9hFHZ</string>
+    <string name="search_tweet">Search tweet</string>
 </resources>
