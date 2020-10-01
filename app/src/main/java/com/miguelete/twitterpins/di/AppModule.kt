@@ -21,7 +21,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    @Named("apiKey")
+    @Named("secretKey")
     fun apiSecretProvider(app: Application): String = app.getString(R.string.api_secret)
 
     @Provides
