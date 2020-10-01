@@ -4,6 +4,7 @@ import com.miguelete.data.LocationDataSource
 import com.miguelete.data.repository.LocationRepository
 import com.miguelete.data.repository.PermissionChecker
 import com.miguelete.data.repository.TwitterRepository
+import com.miguelete.data.source.LocalDataSource
 import com.miguelete.data.source.RemoteDataSource
 import dagger.Module
 import dagger.Provides
@@ -22,9 +23,10 @@ class DataModule {
 
     @Provides
     fun twitterRepositoryProvider(
+        localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
         locationRepository: LocationRepository,
         @Named("apiKey") apiKey: String,
         @Named("secretKey") secretKey: String
-    ) = TwitterRepository(remoteDataSource, locationRepository, apiKey, secretKey)
+    ) = TwitterRepository(localDataSource, remoteDataSource, locationRepository, apiKey, secretKey)
 }
