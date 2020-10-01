@@ -7,5 +7,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 //TODO Cambiar parámetros de filtrado por los necesarios
 data class TwitterFilterDto(
-    @SerializedName("coordinates") val coordinates: TweetGeoDto?
+    @SerializedName("latitude") val latitude: Double?,
+    @SerializedName("longitude") val longitude: Double?
+
 ) : Parcelable
