@@ -38,5 +38,4 @@ class TwitterRepository(
 
     suspend fun delete(tweet: Tweet) = localDataSource.deleteTweet(tweet)
 
-    suspend fun deleteOldTweets(millisToDelete: Long) = localDataSource.deleteOldTweets(millisToDelete)
 }

@@ -16,27 +16,22 @@ class RoomDataSource(db: TweetDatabase) : LocalDataSource {
 
     override suspend fun saveTweets(tweets: List<Tweet>) {
         withContext(Dispatchers.IO) {
-            tweetDao.insertTweets(tweets.map { it.toRoomTweet(System.currentTimeMillis()) })
+            tweetDao.insertTweets(tweets.map { it.toRoomTweet() })
         }
     }
 
     override suspend fun saveTweet(tweet: Tweet) {
         withContext(Dispatchers.IO) {
-            tweetDao.insertTweet(tweet.toRoomTweet(System.currentTimeMillis()))
+            tweetDao.insertTweet(tweet.toRoomTweet())
         }
     }
 
     override suspend fun deleteTweet(tweet: Tweet) {
         withContext(Dispatchers.IO) {
-            tweetDao.deleteTweet(tweet.toRoomTweet(System.currentTimeMillis()))
+            tweetDao.deleteTweet(tweet.toRoomTweet())
         }
     }
 
-    override suspend fun deleteOldTweets(millisToDelete: Long) {
-        withContext((Dispatchers.IO)) {
-            tweetDao.deleteOldTweets(millisToDelete, System.currentTimeMillis())
-        }
-    }
 
     override suspend fun findById(id: Int) : Tweet  =
         withContext(Dispatchers.IO) {

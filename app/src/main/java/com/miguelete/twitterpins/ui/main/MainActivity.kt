@@ -13,7 +13,9 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import androidx.lifecycle.Observer
 import com.miguelete.twitterpins.ui.common.EventObserver
 import com.miguelete.twitterpins.ui.common.app
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.miguelete.twitterpins.ui.common.startActivity
+import com.miguelete.twitterpins.ui.detail.DetailActivity
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter : TwitterAdapter2
     private val coarsePermissionRequester = PermissionRequester(this, ACCESS_COARSE_LOCATION)
 
-    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         component = app.component.plus(MainActivityModule())
@@ -33,9 +34,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
-        adapter = TwitterAdapter2 {
-            //TODO listener
-        }
+        adapter = TwitterAdapter2(viewModel::onTweetClicked)
         recycler.adapter = adapter
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
@@ -81,5 +80,10 @@ class MainActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         })
 
+        viewModel.navigateToDetail.observe(this, EventObserver {
+            startActivity<DetailActivity> {
+                putExtra(DetailActivity.TWEET, it)
+            }
+        })
     }
 }

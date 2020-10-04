@@ -7,6 +7,5 @@ data class Tweet(
     val retweetCount: Int,
     val coordinates: LatLong,
     val user: String,
-    val user_image: String,
-    val insertedAt: Long
+    val user_image: String
 )

@@ -3,10 +3,9 @@ package com.miguelete.twitterpins.ui.main
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.miguelete.domain.Tweet
 import com.miguelete.twitterpins.R
-import com.miguelete.twitterpins.databinding.ViewTweetBinding
 import com.miguelete.twitterpins.ui.common.inflate
+import com.miguelete.twitterpins.ui.model.Tweet
 import kotlinx.android.synthetic.main.view_tweet.view.*
 
 class TwitterAdapter2(private val listener: (Tweet) -> Unit) :
@@ -24,7 +23,7 @@ class TwitterAdapter2(private val listener: (Tweet) -> Unit) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val tweet = tweets[position]
         holder.bind(tweet)
-//        holder.itemView.setOnClickListener { listener(tweet) }
+        holder.itemView.setOnClickListener { listener(tweet) }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

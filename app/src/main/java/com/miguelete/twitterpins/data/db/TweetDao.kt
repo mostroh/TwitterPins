@@ -21,9 +21,6 @@ interface TweetDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTweets(tweets: List<Tweet>)
 
-    @Query("DELETE FROM Tweet WHERE insertedMillis + :millisToDelete >= :currentMillis")
-    suspend fun deleteOldTweets(millisToDelete: Long, currentMillis: Long)
-
     @Delete
     suspend fun deleteTweet(tweet: Tweet)
 

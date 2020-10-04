@@ -1,20 +1,17 @@
 package com.miguelete.twitterpins.ui.main
 
 import androidx.lifecycle.*
-import com.miguelete.domain.Tweet
+import com.miguelete.twitterpins.data.toUiTweet
+
 import com.miguelete.twitterpins.ui.common.Event
+import com.miguelete.twitterpins.ui.model.Tweet
+
 import com.miguelete.usecases.GetRecentTweets
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() {
-
-
-    companion object {
-        private const val SECONDS_TO_CLEAR: Long = 60
-    }
 
     private val _spinner = MutableLiveData<Boolean>()
     val spinner: LiveData<Boolean> get() = _spinner
@@ -22,17 +19,14 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> get() = _error
 
-    @ExperimentalCoroutinesApi
-    private val searchChanel = ConflatedBroadcastChannel<String>()
-
     private val _queryTweet = MutableLiveData<Event<String>>()
     val queryTweet: LiveData<Event<String>> get() = _queryTweet
 
-    private val _tweets = MutableLiveData<MutableList<Tweet>>()
-    val tweets: LiveData<MutableList<Tweet>> get() = _tweets
-
     private val _lastTweet = MutableLiveData<Tweet>()
     val lastTweet: LiveData<Tweet> get() = _lastTweet
+
+    private val _navigateToDetail = MutableLiveData<Event<Tweet>>()
+    val navigateToDetail: LiveData<Event<Tweet>> get() = _navigateToDetail
 
     private val _requestLocationPermission = MutableLiveData<Event<Unit>>()
     val requestLocationPermission: LiveData<Event<Unit>> get() = _requestLocationPermission
@@ -41,50 +35,18 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
         _requestLocationPermission.value = Event(Unit)
     }
 
-//    fun loadRecentTweets(query: String) {
-//        viewModelScope.launch {
-//            getRecentTweets.getTweets(query)
-//                .onStart {
-//                    _spinner.value = true
-//                }
-//                .catch { trowable ->
-//                    showError("Error ${trowable.message}")
-//                }
-//                .collect { tweets ->
-//                    _spinner.value = false
-//                    _tweets.value = tweets.filter {twt ->
-//                        val current= System.currentTimeMillis()
-//                        val passedSeconds = passedSeconds(twt.insertedAt, current)
-//                        passedSeconds <= SECONDS_TO_CLEAR
-//                    }
-//                }
-//        }
-//    }
-
     @ExperimentalCoroutinesApi
     fun loadRecentTweets(query: String) {
         viewModelScope.launch {
             getRecentTweets.observeTweets(query)
-                .catch { trowable ->
-                    showError("Error ${trowable.message}")
+                .catch { throwable ->
+                    showError("Error ${throwable.message}")
                 }
                 .collect { tweet ->
                     _spinner.value = false
-                    _lastTweet.value = tweet
+                    _lastTweet.value = tweet.toUiTweet()
                 }
         }
-    }
-
-    private fun passedSeconds(start: Long, end: Long): Long {
-        val diff = (end - start)
-        val passed = (diff / 1000)
-        return passed
-    }
-
-
-    @ExperimentalCoroutinesApi
-    fun searchQuery(query: String) {
-        searchChanel.offer(query)
     }
 
     override fun onCleared() {
@@ -102,6 +64,10 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
     fun onSearchQuery(query: String) {
         _spinner.value = true
         _queryTweet.value = Event(query)
+    }
+
+    fun onTweetClicked(tweet: Tweet) {
+        _navigateToDetail.value = Event(tweet)
     }
 
     fun stopFetchingTweets() {

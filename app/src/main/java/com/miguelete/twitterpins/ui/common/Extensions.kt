@@ -1,6 +1,8 @@
 package com.miguelete.twitterpins.ui.common
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,13 +25,19 @@ fun <T : ViewDataBinding> ViewGroup.bindingInflate(
     DataBindingUtil.inflate(LayoutInflater.from(context), layoutRes, this, attachToRoot)
 
 
-fun ImageView.loadUrl(url: String) {
-    Glide.with(context).load(url).into(this)
+fun ImageView.loadUrlAndCircle(url: String) {
+    Glide.with(context).load(url).circleCrop().into(this)
 }
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = true): View =
     LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 
+inline fun <reified T : Activity> Context.startActivity(body: Intent.() -> Unit) {
+    startActivity(intentFor<T>(body))
+}
+
+inline fun <reified T : Activity> Context.intentFor(body: Intent.() -> Unit): Intent =
+    Intent(this, T::class.java).apply(body)
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T : ViewModel> FragmentActivity.getViewModel(crossinline factory: () -> T): T {

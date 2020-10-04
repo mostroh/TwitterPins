@@ -1,16 +1,15 @@
-package com.miguelete.twitterpins.data.db
+package com.miguelete.twitterpins.ui.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-@Entity
+@Parcelize
 data class Tweet(
-    @PrimaryKey val id: Long,
     val text: String,
     val createdAt: String,
     val retweetCount: Int,
     val latitude: Double,
     val longitude: Double,
     val user: String,
-    val userImage: String
-)
+    val user_image: String
+) : Parcelable

@@ -3,13 +3,14 @@ package com.miguelete.twitterpins.data
 import com.miguelete.domain.LatLong
 import com.miguelete.domain.Tweet
 import com.miguelete.twitterpins.data.db.Tweet as RoomTweet
+import com.miguelete.twitterpins.ui.model.Tweet as UiTweet
 import twitter4j.GeoLocation
 import twitter4j.Status
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-fun Tweet.toRoomTweet(insertedMillis: Long?) : RoomTweet = RoomTweet(
+fun Tweet.toRoomTweet() : RoomTweet = RoomTweet(
     id,
     text,
     createdAt,
@@ -17,8 +18,7 @@ fun Tweet.toRoomTweet(insertedMillis: Long?) : RoomTweet = RoomTweet(
     coordinates.lat,
     coordinates.long,
     user,
-    user_image,
-    insertedMillis ?: insertedAt
+    user_image
 )
 
 fun RoomTweet.toDomainTweet(): Tweet = Tweet(
@@ -28,8 +28,7 @@ fun RoomTweet.toDomainTweet(): Tweet = Tweet(
     retweetCount,
     LatLong(latitude, longitude),
     user,
-    userImage,
-    insertedMillis
+    userImage
 )
 
 fun Status.toDomainTweet() : Tweet = Tweet(
@@ -39,8 +38,17 @@ fun Status.toDomainTweet() : Tweet = Tweet(
     retweetCount,
     buildLatLongFromGeolocation(geoLocation),
     user.name,
-    user.originalProfileImageURL,
-    System.currentTimeMillis()
+    user.originalProfileImageURLHttps
+)
+
+fun Tweet.toUiTweet() : UiTweet = UiTweet(
+    text,
+    createdAt,
+    retweetCount,
+    coordinates.lat,
+    coordinates.long,
+    user,
+    user_image
 )
 
 fun randomLatLong() : LatLong {
