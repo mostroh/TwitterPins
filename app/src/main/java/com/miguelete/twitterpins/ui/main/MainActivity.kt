@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var component: MainActivityComponent
     private val viewModel: MainViewModel by lazy { getViewModel{ component.mainViewModel }}
-    private lateinit var adapter : TweetsAdapter
+    private lateinit var adapter : TwitterAdapter2
     private val coarsePermissionRequester = PermissionRequester(this, ACCESS_COARSE_LOCATION)
 
     @ExperimentalCoroutinesApi
@@ -33,7 +33,9 @@ class MainActivity : AppCompatActivity() {
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
-        adapter = TweetsAdapter()
+        adapter = TwitterAdapter2 {
+            //TODO listener
+        }
         recycler.adapter = adapter
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
@@ -74,8 +76,10 @@ class MainActivity : AppCompatActivity() {
                 searchCriteria -> viewModel.loadRecentTweets(searchCriteria)
         })
 
-        viewModel.tweets.observe(this, Observer {
-            adapter.submitList(it)
+        viewModel.lastTweet.observe(this, Observer {
+            adapter.tweets.add(it)
+            adapter.notifyDataSetChanged()
         })
+
     }
 }

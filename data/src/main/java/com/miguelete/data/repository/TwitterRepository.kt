@@ -21,9 +21,12 @@ class TwitterRepository(
             .combine(localDataSource.getTweetsContaining(query)) { remote, local ->
                 local
             }
-            .flowOn(Dispatchers.Default)
+            .flowOn(Dispatchers.IO)
             .conflate()
 
+
+    suspend fun observeTweets(query: String) : Flow<Tweet> =
+        remoteDataSource.getStreamTweet(query)
 
 
     suspend fun disconnectStream() {

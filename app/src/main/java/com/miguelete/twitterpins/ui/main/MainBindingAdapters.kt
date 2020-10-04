@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.miguelete.domain.Tweet
 
 //@BindingAdapter("items")
-//fun RecyclerView.setItems(tweets: List<Tweet>?) {
-//    (adapter as? TweetsAdapter)?.let {
-//        it.tweets = tweets ?: emptyList()
+//fun RecyclerView.setItems(tweets: MutableList<Tweet>?) {
+//    (adapter as? TwitterAdapter2)?.let {
+//        it.tweets = tweets ?: mutableListOf()
 //    }
 //}

@@ -15,9 +15,48 @@ import twitter4j.StatusListener
 class TwitterDbDataSource(private val twitterStreamConnector: TwitterStreamConnector) : RemoteDataSource {
 
 
-    override suspend fun getStreamAsFlow(query: String) : Flow<List<Tweet>> = getStreamTweet(query)
 
-    private suspend fun getStreamTweet(query: String) : Flow<List<Tweet>> =
+    override suspend fun getStreamAsFlow(query: String) : Flow<List<Tweet>> = getStreamTweets(query)
+
+    override suspend fun getStreamTweet(query: String) : Flow<Tweet> =
+        callbackFlow {
+            val callback = object : StatusListener {
+                override fun onTrackLimitationNotice(numberOfLimitedStatuses: Int) {
+                    Log.d("TweetStream", "onTrackLimitationNotice")
+                    close()
+                }
+
+                override fun onStallWarning(warning: StallWarning?) {
+                    Log.d("TweetStream", "onStallWarning ${warning?.message}")
+                }
+
+                override fun onException(ex: Exception?) {
+                    Log.d("TweetStream", "onException ${ex?.message}")
+                    close(ex)
+                }
+
+                override fun onDeletionNotice(statusDeletionNotice: StatusDeletionNotice?) {
+                    Log.d("TweetStream", "onDeletionNotice")
+                }
+
+                override fun onStatus(status: Status?) {
+                    status?.let {
+                        offer(it.toDomainTweet())
+                    }
+                }
+
+                override fun onScrubGeo(userId: Long, upToStatusId: Long) {
+                    Log.d("TweetStream", "onScrubGeo")
+                }
+
+            }
+
+            twitterStreamConnector.connectToFilterStream(query, callback)
+            awaitClose {
+                twitterStreamConnector.clearStream()}
+        }
+
+    private suspend fun getStreamTweets(query: String) : Flow<List<Tweet>> =
         callbackFlow {
             val callback = object : StatusListener {
                 override fun onTrackLimitationNotice(numberOfLimitedStatuses: Int) {

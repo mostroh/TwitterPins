@@ -12,15 +12,15 @@ import kotlinx.coroutines.launch
 class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() {
 
 
-    companion object{
-        private const val SECONDS_TO_CLEAR :Long = 60
+    companion object {
+        private const val SECONDS_TO_CLEAR: Long = 60
     }
 
     private val _spinner = MutableLiveData<Boolean>()
-    val spinner : LiveData<Boolean> get() = _spinner
+    val spinner: LiveData<Boolean> get() = _spinner
 
     private val _error = MutableLiveData<String?>()
-    val error : LiveData<String?> get() = _error
+    val error: LiveData<String?> get() = _error
 
     @ExperimentalCoroutinesApi
     private val searchChanel = ConflatedBroadcastChannel<String>()
@@ -28,8 +28,11 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
     private val _queryTweet = MutableLiveData<Event<String>>()
     val queryTweet: LiveData<Event<String>> get() = _queryTweet
 
-    private val _tweets = MutableLiveData<List<Tweet>>()
-    val tweets : LiveData<List<Tweet>> get() = _tweets
+    private val _tweets = MutableLiveData<MutableList<Tweet>>()
+    val tweets: LiveData<MutableList<Tweet>> get() = _tweets
+
+    private val _lastTweet = MutableLiveData<Tweet>()
+    val lastTweet: LiveData<Tweet> get() = _lastTweet
 
     private val _requestLocationPermission = MutableLiveData<Event<Unit>>()
     val requestLocationPermission: LiveData<Event<Unit>> get() = _requestLocationPermission
@@ -38,29 +41,43 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
         _requestLocationPermission.value = Event(Unit)
     }
 
+//    fun loadRecentTweets(query: String) {
+//        viewModelScope.launch {
+//            getRecentTweets.getTweets(query)
+//                .onStart {
+//                    _spinner.value = true
+//                }
+//                .catch { trowable ->
+//                    showError("Error ${trowable.message}")
+//                }
+//                .collect { tweets ->
+//                    _spinner.value = false
+//                    _tweets.value = tweets.filter {twt ->
+//                        val current= System.currentTimeMillis()
+//                        val passedSeconds = passedSeconds(twt.insertedAt, current)
+//                        passedSeconds <= SECONDS_TO_CLEAR
+//                    }
+//                }
+//        }
+//    }
+
+    @ExperimentalCoroutinesApi
     fun loadRecentTweets(query: String) {
         viewModelScope.launch {
-            getRecentTweets.getTweets(query)
-                .onStart {
-                    _spinner.value = true
-                }
+            getRecentTweets.observeTweets(query)
                 .catch { trowable ->
                     showError("Error ${trowable.message}")
                 }
-                .collect { tweets ->
+                .collect { tweet ->
                     _spinner.value = false
-                    _tweets.value = tweets.filter {twt ->
-                        val current= System.currentTimeMillis()
-                        val passedSeconds = passedSeconds(twt.insertedAt, current)
-                        passedSeconds <= SECONDS_TO_CLEAR
-                    }
+                    _lastTweet.value = tweet
                 }
         }
     }
 
     private fun passedSeconds(start: Long, end: Long): Long {
-        val diff =(end - start)
-        val passed = (diff /1000)
+        val diff = (end - start)
+        val passed = (diff / 1000)
         return passed
     }
 
@@ -83,6 +100,7 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
     }
 
     fun onSearchQuery(query: String) {
+        _spinner.value = true
         _queryTweet.value = Event(query)
     }
 

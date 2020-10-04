@@ -27,9 +27,8 @@ fun ImageView.loadUrl(url: String) {
     Glide.with(context).load(url).into(this)
 }
 
-fun ViewGroup.inflate(@LayoutRes layout: Int): View {
-    return LayoutInflater.from(context).inflate(layout, this, false)
-}
+fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = true): View =
+    LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 
 
 @Suppress("UNCHECKED_CAST")
