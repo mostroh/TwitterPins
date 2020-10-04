@@ -2,6 +2,7 @@ package com.miguelete.twitterpins.ui.common
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.LayoutRes
@@ -24,6 +25,10 @@ fun <T : ViewDataBinding> ViewGroup.bindingInflate(
 
 fun ImageView.loadUrl(url: String) {
     Glide.with(context).load(url).into(this)
+}
+
+fun ViewGroup.inflate(@LayoutRes layout: Int): View {
+    return LayoutInflater.from(context).inflate(layout, this, false)
 }
 
 

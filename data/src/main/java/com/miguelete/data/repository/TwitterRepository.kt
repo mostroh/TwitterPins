@@ -3,6 +3,7 @@ package com.miguelete.data.repository
 import com.miguelete.data.source.LocalDataSource
 import com.miguelete.data.source.RemoteDataSource
 import com.miguelete.domain.Tweet
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 class TwitterRepository(
@@ -11,25 +12,19 @@ class TwitterRepository(
     private val locationRepository: LocationRepository
 ) {
 
-    fun getTweets(query: String? = null) : Flow<List<Tweet>> {
-        return if (query.isNullOrEmpty()){
-            localDataSource.getTweets()
-        } else {
-            localDataSource.getTweetsContaining(query)
-            localDataSource.getTweets()
-        }
-    }
+    suspend fun getTweets(query: String) : Flow<List<Tweet>>  =
+        remoteDataSource.getStreamAsFlow(query)
+            .flowOn(Dispatchers.Default)
+            .map { tweetList ->
+                localDataSource.saveTweets(tweetList)
+            }
+            .combine(localDataSource.getTweetsContaining(query)) { remote, local ->
+                local
+            }
+            .flowOn(Dispatchers.Default)
+            .conflate()
 
-    suspend fun connectStreamAndUpdate(query: String): Flow<List<Tweet>> = remoteDataSource.getStreamAsFlow(query)
-//    {
-//        remoteDataSource.getStreamAsFlow(query)
-//            .catch {
-//                    throwable -> println("Error in Repository: ${throwable.message}")
-//            }
-//            .collect {
-//                localDataSource.saveTweets(it)
-//            }
-//    }
+
 
     suspend fun disconnectStream() {
         remoteDataSource.disconnectStream()

@@ -1,25 +1,19 @@
 package com.miguelete.twitterpins.ui.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.miguelete.domain.Tweet
 import com.miguelete.twitterpins.ui.common.Event
 import com.miguelete.usecases.GetRecentTweets
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.Exception
 
 class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() {
 
 
     companion object{
-        private const val MILLISECONDS_TO_CLEAR :Long = 5000
+        private const val SECONDS_TO_CLEAR :Long = 60
     }
 
     private val _spinner = MutableLiveData<Boolean>()
@@ -27,6 +21,9 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
 
     private val _error = MutableLiveData<String?>()
     val error : LiveData<String?> get() = _error
+
+    @ExperimentalCoroutinesApi
+    private val searchChanel = ConflatedBroadcastChannel<String>()
 
     private val _queryTweet = MutableLiveData<Event<String>>()
     val queryTweet: LiveData<Event<String>> get() = _queryTweet
@@ -43,17 +40,34 @@ class MainViewModel(private val getRecentTweets: GetRecentTweets) : ViewModel() 
 
     fun loadRecentTweets(query: String) {
         viewModelScope.launch {
-            getRecentTweets.connectStream(query)
+            getRecentTweets.getTweets(query)
                 .onStart {
-
+                    _spinner.value = true
                 }
                 .catch { trowable ->
                     showError("Error ${trowable.message}")
                 }
-                .collect{ tweets ->
-                    _tweets.value = tweets
+                .collect { tweets ->
+                    _spinner.value = false
+                    _tweets.value = tweets.filter {twt ->
+                        val current= System.currentTimeMillis()
+                        val passedSeconds = passedSeconds(twt.insertedAt, current)
+                        passedSeconds <= SECONDS_TO_CLEAR
+                    }
                 }
         }
+    }
+
+    private fun passedSeconds(start: Long, end: Long): Long {
+        val diff =(end - start)
+        val passed = (diff /1000)
+        return passed
+    }
+
+
+    @ExperimentalCoroutinesApi
+    fun searchQuery(query: String) {
+        searchChanel.offer(query)
     }
 
     override fun onCleared() {

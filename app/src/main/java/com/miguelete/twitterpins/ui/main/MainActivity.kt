@@ -10,8 +10,10 @@ import com.miguelete.twitterpins.ui.common.PermissionRequester
 import com.miguelete.twitterpins.ui.common.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import androidx.lifecycle.Observer
 import com.miguelete.twitterpins.ui.common.EventObserver
 import com.miguelete.twitterpins.ui.common.app
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter : TweetsAdapter
     private val coarsePermissionRequester = PermissionRequester(this, ACCESS_COARSE_LOCATION)
 
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         component = app.component.plus(MainActivityModule())
@@ -36,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let { viewModel.onSearchQuery(query)}
+                search.clearFocus()
                 return true
             }
 
@@ -48,18 +52,18 @@ class MainActivity : AppCompatActivity() {
         observeViewModels()
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//        with(search.query.toString()){
-//            if (!isNullOrEmpty()) viewModel.onSearchQuery(this)
-//        }
-//
-//    }
-//
-//    override fun onStop() {
-//        super.onStop()
-//        viewModel.stopFetchingTweets()
-//    }
+    override fun onStart() {
+        super.onStart()
+        with(search.query.toString()){
+            if (!isNullOrEmpty()) viewModel.onSearchQuery(this)
+        }
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.stopFetchingTweets()
+    }
 
     private fun observeViewModels(){
         viewModel.requestLocationPermission.observe(this, EventObserver {
@@ -67,8 +71,11 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.queryTweet.observe(this, EventObserver {
-
                 searchCriteria -> viewModel.loadRecentTweets(searchCriteria)
+        })
+
+        viewModel.tweets.observe(this, Observer {
+            adapter.submitList(it)
         })
     }
 }
