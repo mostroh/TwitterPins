@@ -1,8 +1,10 @@
 <resources>
+
     <string name="app_name">TwitterPins</string>
-    <string name="api_key" translatable="false">goLW6rf2d4JAcjlXGL6atihRp</string>
-    <string name="api_secret" translatable="false">oZ52IVm9gMpQvdQMahLyKGD5XfG9lgj1qqIcsqHr3vFrV9hFHZ</string>
-    <string name="access_token" translatable="false">1311276925852282881-slQOoGgVn63i0GWrFyfes1Lp02cbHJ</string>
-    <string name="access_secret" translatable="false">HUTNKdtRD84BOlVkvyDM5S8uXKsudz4LlXAU4RaF4clPr</string>
     <string name="search_tweet">Search tweet</string>
+    <string name="api_key" translatable="false">XXXXXXX</string>
+    <string name="api_secret" translatable="false">XXXXXXXX</string>
+    <string name="access_token" translatable="false">XXXXXXXXX</string>
+    <string name="access_secret" translatable="false">XXXXXXXXXX</string>
+
 </resources>
