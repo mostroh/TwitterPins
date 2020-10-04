@@ -6,9 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 class GetRecentTweets(private val twitterRepository: TwitterRepository) {
 
-    suspend fun getTweets(query:String): Flow<List<Tweet>>
-    = twitterRepository.getTweets(query)
-
     suspend fun observeTweets(query:String): Flow<Tweet>
             = twitterRepository.observeTweets(query)
 

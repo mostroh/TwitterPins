@@ -15,9 +15,6 @@ import twitter4j.StatusListener
 class TwitterDbDataSource(private val twitterStreamConnector: TwitterStreamConnector) : RemoteDataSource {
 
 
-
-    override suspend fun getStreamAsFlow(query: String) : Flow<List<Tweet>> = getStreamTweets(query)
-
     override suspend fun getStreamTweet(query: String) : Flow<Tweet> =
         callbackFlow {
             val callback = object : StatusListener {

@@ -7,7 +7,5 @@ interface RemoteDataSource {
 
     suspend fun getStreamTweet(query: String) : Flow<Tweet>
 
-    suspend fun getStreamAsFlow(query: String) : Flow<List<Tweet>>
-
     suspend fun disconnectStream()
 }

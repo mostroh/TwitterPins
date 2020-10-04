@@ -26,27 +26,11 @@ class RoomDataSource(db: TweetDatabase) : LocalDataSource {
         }
     }
 
-    override suspend fun deleteTweet(tweet: Tweet) {
-        withContext(Dispatchers.IO) {
-            tweetDao.deleteTweet(tweet.toRoomTweet())
-        }
-    }
-
-
-    override suspend fun findById(id: Int) : Tweet  =
-        withContext(Dispatchers.IO) {
-            tweetDao.findById(id).toDomainTweet()
-    }
-
     override fun getTweets(): Flow<List<Tweet>>  =
         tweetDao
             .getAll()
             .map { tweets -> tweets.map { it.toDomainTweet() } }
 
-    override fun getTweetsContaining(query: String): Flow<List<Tweet>> =
-        tweetDao
-            .getAllContaining("%%$query%")
-            .map { tweets -> tweets.map { it.toDomainTweet() } }
 
 
 

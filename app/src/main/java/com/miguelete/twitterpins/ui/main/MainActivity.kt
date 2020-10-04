@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         with(search.query.toString()){
             if (!isNullOrEmpty()) viewModel.onSearchQuery(this)
+            search.clearFocus()
         }
 
     }

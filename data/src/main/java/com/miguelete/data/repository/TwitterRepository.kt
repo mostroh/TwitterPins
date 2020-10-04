@@ -12,19 +12,6 @@ class TwitterRepository(
     private val locationRepository: LocationRepository
 ) {
 
-    suspend fun getTweets(query: String) : Flow<List<Tweet>>  =
-        remoteDataSource.getStreamAsFlow(query)
-            .flowOn(Dispatchers.Default)
-            .map { tweetList ->
-                localDataSource.saveTweets(tweetList)
-            }
-            .combine(localDataSource.getTweetsContaining(query)) { remote, local ->
-                local
-            }
-            .flowOn(Dispatchers.IO)
-            .conflate()
-
-
     suspend fun observeTweets(query: String) : Flow<Tweet> =
         remoteDataSource.getStreamTweet(query)
 
@@ -33,9 +20,5 @@ class TwitterRepository(
         remoteDataSource.disconnectStream()
     }
 
-
-    suspend fun findById(id: Int): Tweet = localDataSource.findById(id)
-
-    suspend fun delete(tweet: Tweet) = localDataSource.deleteTweet(tweet)
 
 }
