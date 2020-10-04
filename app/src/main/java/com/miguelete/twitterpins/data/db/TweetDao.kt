@@ -15,6 +15,9 @@ interface TweetDao {
     @Query("SELECT * FROM Tweet WHERE id = :id")
     fun findById(id: Int): Tweet
 
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTweet(toRoomTweet: Tweet)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTweets(tweets: List<Tweet>)
 

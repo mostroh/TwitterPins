@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
 
         adapter = TweetsAdapter()
+        recycler.adapter = adapter
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -47,12 +48,26 @@ class MainActivity : AppCompatActivity() {
         observeViewModels()
     }
 
+//    override fun onStart() {
+//        super.onStart()
+//        with(search.query.toString()){
+//            if (!isNullOrEmpty()) viewModel.onSearchQuery(this)
+//        }
+//
+//    }
+//
+//    override fun onStop() {
+//        super.onStop()
+//        viewModel.stopFetchingTweets()
+//    }
+
     private fun observeViewModels(){
         viewModel.requestLocationPermission.observe(this, EventObserver {
             coarsePermissionRequester.request {}
         })
 
         viewModel.queryTweet.observe(this, EventObserver {
+
                 searchCriteria -> viewModel.loadRecentTweets(searchCriteria)
         })
     }

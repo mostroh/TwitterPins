@@ -1,10 +1,11 @@
 package com.miguelete.data.source
 
-import com.miguelete.domain.LatLong
 import com.miguelete.domain.Tweet
+import kotlinx.coroutines.flow.Flow
 
 interface RemoteDataSource {
-    suspend fun getRecentTweets(
-        latLong: LatLong,
-        query: String) : List<Tweet>
+
+    suspend fun getStreamAsFlow(query: String) : Flow<List<Tweet>>
+
+    suspend fun disconnectStream()
 }

@@ -3,18 +3,11 @@ package com.miguelete.twitterpins.data
 import com.miguelete.domain.LatLong
 import com.miguelete.domain.Tweet
 import com.miguelete.twitterpins.data.db.Tweet as RoomTweet
-import com.miguelete.twitterpins.data.server.TweetResult
+import twitter4j.GeoLocation
+import twitter4j.Status
+import java.text.SimpleDateFormat
+import java.util.*
 
-fun TweetResult.toDomainTweet(): Tweet = Tweet(
-    id,
-    text,
-    createdAt,
-    retweetCount,
-    getCoordinates(this),
-    user.name,
-    user.profileImageUrl,
-    0
-)
 
 fun Tweet.toRoomTweet(insertedMillis: Long?) : RoomTweet = RoomTweet(
     id,
@@ -39,14 +32,35 @@ fun RoomTweet.toDomainTweet(): Tweet = Tweet(
     insertedMillis
 )
 
+fun Status.toDomainTweet() : Tweet = Tweet(
+    id,
+    text,
+    createdAt.toSimpleDate(),
+    retweetCount,
+    buildLatLongFromGeolocation(geoLocation),
+    user.name,
+    user.originalProfileImageURL,
+    System.currentTimeMillis()
+)
 
-private fun getCoordinates(tweetResult: TweetResult) : LatLong {
-    var latLong = LatLong(0.0,0.0)
-    tweetResult.coordinates?.let {
-        latLong = LatLong(it.coordinates.latitude, it.coordinates.longitude)
+fun randomLatLong() : LatLong {
+    val r = Random()
+    val u: Double = r.nextDouble()
+    val v: Double = r.nextDouble()
+    val latitude = Math.toDegrees(Math.acos(u * 2 - 1)) - 90
+    val longitude = 360 * v - 180
+    return LatLong(latitude, longitude)
+}
+
+private fun buildLatLongFromGeolocation(geoLocation: GeoLocation?): LatLong {
+    return if (geoLocation!=null){
+        LatLong(geoLocation.latitude, geoLocation.longitude)
+    } else {
+        randomLatLong()
     }
-    tweetResult.geo?.let {
-        latLong = LatLong(it.coordinates.latitude, it.coordinates.longitude)
-    }
-    return latLong
+}
+
+private fun Date.toSimpleDate() : String {
+    val format = SimpleDateFormat("HH:mm dd/MM/yyy", Locale.US)
+    return format.format(this)
 }

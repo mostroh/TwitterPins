@@ -20,6 +20,12 @@ class RoomDataSource(db: TweetDatabase) : LocalDataSource {
         }
     }
 
+    override suspend fun saveTweet(tweet: Tweet) {
+        withContext(Dispatchers.IO) {
+            tweetDao.insertTweet(tweet.toRoomTweet(System.currentTimeMillis()))
+        }
+    }
+
     override suspend fun deleteTweet(tweet: Tweet) {
         withContext(Dispatchers.IO) {
             tweetDao.deleteTweet(tweet.toRoomTweet(System.currentTimeMillis()))
