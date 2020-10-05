@@ -15,6 +15,7 @@ import com.miguelete.twitterpins.ui.common.EventObserver
 import com.miguelete.twitterpins.ui.common.app
 import com.miguelete.twitterpins.ui.common.startActivity
 import com.miguelete.twitterpins.ui.detail.DetailActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 class MainActivity : AppCompatActivity() {
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.stopFetchingTweets()
     }
 
+    @ExperimentalCoroutinesApi
     private fun observeViewModels(){
         viewModel.requestLocationPermission.observe(this, EventObserver {
             coarsePermissionRequester.request {}

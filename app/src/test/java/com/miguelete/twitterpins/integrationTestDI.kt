@@ -36,12 +36,6 @@ class TestAppModule {
 
     @Provides
     @Singleton
-    @Named("apiKey")
-    fun apiKeyProvider(): String = ""
-
-
-    @Provides
-    @Singleton
     fun remoteDataSourceProvider(): RemoteDataSource = FakeRemoteDataSource()
 
     @Provides
@@ -63,7 +57,7 @@ class FakeRemoteDataSource : RemoteDataSource {
 
     var tweet = defaultFakeTweet
 
-    override suspend fun getStreamTweet(query: String): Flow<Tweet> = flow{tweet}
+    override suspend fun getStreamTweet(query: String): Flow<Tweet> = flow{emit(tweet)}
 
     override suspend fun disconnectStream() {}
 }
