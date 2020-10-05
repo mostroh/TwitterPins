@@ -21,7 +21,6 @@ import javax.inject.Singleton
 @Module
 class AppModule {
 
-
     @Provides
     @Singleton
     fun oauthKeysProvider(app: Application): OauthKeys = OauthKeys(
@@ -30,13 +29,6 @@ class AppModule {
         app.getString(R.string.access_token),
         app.getString(R.string.access_secret)
     )
-
-//    @Provides
-//    @Singleton
-//    fun oauthKeysProvider(app: Application): OauthKeys = OauthKeys(
-//        app.getString(R.string.api_key),
-//        app.getString(R.string.api_secret)
-//    )
 
     @Provides
     @Singleton

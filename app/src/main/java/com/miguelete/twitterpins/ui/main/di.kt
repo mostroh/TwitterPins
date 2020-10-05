@@ -19,5 +19,6 @@ class MainActivityModule {
 
 @Subcomponent(modules = [(MainActivityModule::class)])
 interface MainActivityComponent {
+
     val mainViewModel: MainViewModel
 }
